@@ -16,30 +16,28 @@ import {
 } from '../pokemon'
 
 function PokemonInfo({pokemonName}) {
-  // 🐨 Have state for the pokemon (null)
-
   const [pokemon, setPokemon] = useState(null)
-  // 🐨 use React.useEffect where the callback should be called whenever the
-  // pokemon name changes.
-  // 💰 DON'T FORGET THE DEPENDENCIES ARRAY!
-  // 💰 if the pokemonName is falsy (an empty string) then don't bother making the request (exit early).
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     if (!pokemonName) return
     setPokemon(null)
-    fetchPokemon(pokemonName).then(pokemonData => {
-      setPokemon(pokemonData)
-    })
+    fetchPokemon(pokemonName).then(
+      pokemonData => setPokemon(pokemonData),
+      error => setError(error),
+    )
   }, [pokemonName])
 
-  if (!pokemonName) return 'Submit a pokemon'
+  if (error) {
+    return (
+      <div role="alert">
+        There was an error:{' '}
+        <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
+      </div>
+    )
+  } else if (!pokemonName) return 'Submit a pokemon'
   else if (!pokemon) return <PokemonInfoFallback name={pokemonName} />
   else return <PokemonDataView pokemon={pokemon} />
-
-  // 🐨 before calling `fetchPokemon`, clear the current pokemon state by setting it to null.
-  // (This is to enable the loading state when switching between different pokemon.)
-  // 💰 Use the `fetchPokemon` function to fetch a pokemon by its name:
-  //   )
 }
 
 function App() {
